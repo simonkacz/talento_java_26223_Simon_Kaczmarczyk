@@ -1,205 +1,666 @@
 {
   "info": {
-    "name": "API Articulos MySQL - CRUD (Entrega Final)",
-    "_postman_id": "abcd1234-5678-90ef-ghij-klmnopqrstuv",
-    "description": "Colección completa de endpoints para la API REST de artículos conectada a MySQL (XAMPP) con herencia POO.",
+    "name": "API Articulos MySQL - CRUD Completo + Tests (Entrega Final)",
+    "_postman_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "description": "Colección completa organizada por carpetas con pruebas automatizadas (Tests) para demostrar el patrón MVC, herencia POO (General, Electrónico, Alimenticio), gestión de Categorías, CRUD completo y manejo de errores HTTP 404 en Spring Boot + MySQL.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "categoriaIdCreada",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "articuloGeneralId",
+      "value": "3",
+      "type": "string"
+    },
+    {
+      "key": "articuloElectronicoId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "articuloAlimenticioId",
+      "value": "2",
+      "type": "string"
+    }
+  ],
   "item": [
     {
-      "name": "GET - Listar todos los artículos",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8080/api/articulos",
-          "protocol": "http",
-          "host": [
-            "localhost"
+      "name": "1. Categorías (GET y POST)",
+      "description": "Endpoints para consultar y dar de alta categorías en MySQL.",
+      "item": [
+        {
+          "name": "GET - Listar todas las categorías",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta HTTP 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Devuelve una lista de categorías en JSON', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    pm.expect(jsonData.length).to.be.above(0);",
+                  "});"
+                ]
+              }
+            }
           ],
-          "port": "8080",
-          "path": [
-            "api",
-            "articulos"
-          ]
-        }
-      }
-    },
-    {
-      "name": "GET - Obtener artículo por ID",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8080/api/articulos/1",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8080",
-          "path": [
-            "api",
-            "articulos",
-            "1"
-          ]
-        }
-      }
-    },
-    {
-      "name": "POST - Crear nuevo artículo (Simple / General)",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/categorias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "categorias"
+              ]
+            },
+            "description": "Obtiene todas las categorías registradas en la tabla `categorias`."
           }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"nombre\": \"Cuaderno\",\n  \"precio\": 550.0\n}"
         },
-        "url": {
-          "raw": "http://localhost:8080/api/articulos",
-          "protocol": "http",
-          "host": [
-            "localhost"
+        {
+          "name": "POST - Crear nueva categoría (Hogar y Bazar)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Categoría creada con HTTP 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Guarda el código generado para usarlo en los artículos', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.codigo).to.be.a('number');",
+                  "    pm.expect(jsonData.nombre).to.eql('Hogar y Bazar');",
+                  "    pm.collectionVariables.set('categoriaIdCreada', jsonData.codigo);",
+                  "});"
+                ]
+              }
+            }
           ],
-          "port": "8080",
-          "path": [
-            "api",
-            "articulos"
-          ]
-        }
-      }
-    },
-    {
-      "name": "POST - Crear artículo Electrónico (Herencia)",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Hogar y Bazar\",\n  \"descripcion\": \"Artículos de uso doméstico y decoración\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/categorias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "categorias"
+              ]
+            },
+            "description": "Crea una categoría nueva en MySQL y guarda su ID automáticamente en la variable `categoriaIdCreada`."
           }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"tipo\": \"ELECTRONICO\",\n  \"nombre\": \"Mouse Gamer RGB\",\n  \"precio\": 28500.0,\n  \"garantiaMeses\": 24,\n  \"categoria\": {\n    \"codigo\": 1\n  }\n}"
-        },
-        "url": {
-          "raw": "http://localhost:8080/api/articulos",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8080",
-          "path": [
-            "api",
-            "articulos"
-          ]
         }
-      }
+      ]
     },
     {
-      "name": "POST - Crear artículo Alimenticio (Herencia)",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
+      "name": "2. Alta de Artículos - Herencia POO (POST)",
+      "description": "Demuestra el polimorfismo al persistir la clase base Articulo y sus subclases ArticuloElectronico y ArticuloAlimenticio.",
+      "item": [
+        {
+          "name": "POST - Crear Artículo General (Clase Base)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Artículo General creado con HTTP 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Tipo de artículo es General y guarda ID', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.tipoArticulo).to.eql('General');",
+                  "    pm.collectionVariables.set('articuloGeneralId', jsonData.codigo);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"GENERAL\",\n  \"nombre\": \"Lámpara de Escritorio\",\n  \"precio\": 18500.0,\n  \"categoria\": {\n    \"codigo\": {{categoriaIdCreada}}\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/articulos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "articulos"
+              ]
+            },
+            "description": "Crea un artículo de tipo GENERAL asociado a la categoría creada en el paso anterior."
           }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"tipo\": \"ALIMENTICIO\",\n  \"nombre\": \"Yogur Natural\",\n  \"precio\": 1850.0,\n  \"diasParaVencimiento\": 14,\n  \"categoria\": {\n    \"codigo\": 2\n  }\n}"
         },
-        "url": {
-          "raw": "http://localhost:8080/api/articulos",
-          "protocol": "http",
-          "host": [
-            "localhost"
+        {
+          "name": "POST - Crear Artículo Electrónico (Con Garantía)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Artículo Electrónico creado con HTTP 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Verifica herencia: tipo Electrónico y garantía de 24 meses', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.tipoArticulo).to.eql('Electrónico');",
+                  "    pm.expect(jsonData.garantiaMeses).to.eql(24);",
+                  "    pm.collectionVariables.set('articuloElectronicoId', jsonData.codigo);",
+                  "});"
+                ]
+              }
+            }
           ],
-          "port": "8080",
-          "path": [
-            "api",
-            "articulos"
-          ]
-        }
-      }
-    },
-    {
-      "name": "PUT - Actualizar artículo",
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"ELECTRONICO\",\n  \"nombre\": \"Monitor LED 24 Pulgadas\",\n  \"precio\": 195000.0,\n  \"garantiaMeses\": 24,\n  \"categoria\": {\n    \"codigo\": 1\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/articulos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "articulos"
+              ]
+            },
+            "description": "Crea una instancia de `ArticuloElectronico` con su atributo propio `garantiaMeses`."
           }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"nombre\": \"Cuaderno grande\",\n  \"precio\": 650.0\n}"
         },
-        "url": {
-          "raw": "http://localhost:8080/api/articulos/1",
-          "protocol": "http",
-          "host": [
-            "localhost"
+        {
+          "name": "POST - Crear Artículo Alimenticio (Con Vencimiento)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Artículo Alimenticio creado con HTTP 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Verifica herencia: tipo Alimenticio y días para vencimiento', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.tipoArticulo).to.eql('Alimenticio');",
+                  "    pm.expect(jsonData.diasParaVencimiento).to.eql(180);",
+                  "    pm.collectionVariables.set('articuloAlimenticioId', jsonData.codigo);",
+                  "});"
+                ]
+              }
+            }
           ],
-          "port": "8080",
-          "path": [
-            "api",
-            "articulos",
-            "1"
-          ]
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"ALIMENTICIO\",\n  \"nombre\": \"Café Molido Premium 500g\",\n  \"precio\": 8900.0,\n  \"diasParaVencimiento\": 180,\n  \"categoria\": {\n    \"codigo\": 2\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/articulos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "articulos"
+              ]
+            },
+            "description": "Crea una instancia de `ArticuloAlimenticio` con su atributo propio `diasParaVencimiento`."
+          }
         }
-      }
+      ]
     },
     {
-      "name": "DELETE - Eliminar artículo",
-      "request": {
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8080/api/articulos/1",
-          "protocol": "http",
-          "host": [
-            "localhost"
+      "name": "3. Consulta de Artículos (GET)",
+      "description": "Endpoints para leer el listado completo o buscar un artículo puntual por su código.",
+      "item": [
+        {
+          "name": "GET - Listar todos los artículos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta HTTP 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Devuelve arreglo JSON con los artículos', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    pm.expect(jsonData.length).to.be.above(0);",
+                  "});"
+                ]
+              }
+            }
           ],
-          "port": "8080",
-          "path": [
-            "api",
-            "articulos",
-            "1"
-          ]
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/articulos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "articulos"
+              ]
+            },
+            "description": "Lista todos los artículos almacenados en MySQL."
+          }
+        },
+        {
+          "name": "GET - Obtener artículo por ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Artículo encontrado con HTTP 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('El JSON contiene nombre, precio y tipoArticulo', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('codigo');",
+                  "    pm.expect(jsonData).to.have.property('nombre');",
+                  "    pm.expect(jsonData).to.have.property('tipoArticulo');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/articulos/{{articuloElectronicoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "articulos",
+                "{{articuloElectronicoId}}"
+              ]
+            },
+            "description": "Consulta un artículo específico por su código (usa el ID creado en el POST o el ID 1 por defecto)."
+          }
         }
-      }
+      ]
     },
     {
-      "name": "GET - Listar categorías",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8080/api/categorias",
-          "protocol": "http",
-          "host": [
-            "localhost"
+      "name": "4. Actualización Polimórfica (PUT)",
+      "description": "Modifica atributos comunes (nombre, precio) y específicos de cada subclase.",
+      "item": [
+        {
+          "name": "PUT - Actualizar Artículo Electrónico (Precio y Garantía)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Artículo actualizado con HTTP 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Actualizó precio y garantía en meses', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.precio).to.eql(215000.0);",
+                  "    pm.expect(jsonData.garantiaMeses).to.eql(36);",
+                  "});"
+                ]
+              }
+            }
           ],
-          "port": "8080",
-          "path": [
-            "api",
-            "categorias"
-          ]
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"ELECTRONICO\",\n  \"nombre\": \"Monitor LED 24 Pulgadas 144Hz\",\n  \"precio\": 215000.0,\n  \"garantiaMeses\": 36,\n  \"categoria\": {\n    \"codigo\": 1\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/articulos/{{articuloElectronicoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "articulos",
+                "{{articuloElectronicoId}}"
+              ]
+            },
+            "description": "Actualiza tanto los campos base como `garantiaMeses` de `ArticuloElectronico`."
+          }
+        },
+        {
+          "name": "PUT - Actualizar Artículo Alimenticio (Precio y Vencimiento)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Artículo alimenticio actualizado con HTTP 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Actualizó precio y días para vencimiento', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.precio).to.eql(7500.0);",
+                  "    pm.expect(jsonData.diasParaVencimiento).to.eql(150);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"ALIMENTICIO\",\n  \"nombre\": \"Café Molido Premium 500g (Oferta)\",\n  \"precio\": 7500.0,\n  \"diasParaVencimiento\": 150,\n  \"categoria\": {\n    \"codigo\": 2\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/articulos/{{articuloAlimenticioId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "articulos",
+                "{{articuloAlimenticioId}}"
+              ]
+            },
+            "description": "Actualiza tanto los campos base como `diasParaVencimiento` de `ArticuloAlimenticio`."
+          }
         }
-      }
+      ]
+    },
+    {
+      "name": "5. Eliminación de Artículos (DELETE)",
+      "description": "Elimina los registros de prueba creados para dejar la base de datos limpia.",
+      "item": [
+        {
+          "name": "DELETE - Eliminar Artículo General",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Eliminado correctamente con HTTP 204 No Content', function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/articulos/{{articuloGeneralId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "articulos",
+                "{{articuloGeneralId}}"
+              ]
+            },
+            "description": "Elimina el artículo general de prueba."
+          }
+        },
+        {
+          "name": "DELETE - Eliminar Artículo Electrónico",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Eliminado correctamente con HTTP 204 No Content', function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/articulos/{{articuloElectronicoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "articulos",
+                "{{articuloElectronicoId}}"
+              ]
+            },
+            "description": "Elimina el artículo electrónico de prueba."
+          }
+        },
+        {
+          "name": "DELETE - Eliminar Artículo Alimenticio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Eliminado correctamente con HTTP 204 No Content', function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/articulos/{{articuloAlimenticioId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "articulos",
+                "{{articuloAlimenticioId}}"
+              ]
+            },
+            "description": "Elimina el artículo alimenticio de prueba."
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Manejo de Errores (404 Not Found)",
+      "description": "Demuestra que el controlador responde correctamente con 404 cuando se consulta, edita o borra un ID inexistente.",
+      "item": [
+        {
+          "name": "GET - Consultar ID inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Devuelve HTTP 404 Not Found para ID inexistente', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/articulos/99999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "articulos",
+                "99999"
+              ]
+            },
+            "description": "Verifica que buscar un código inexistente no rompa el servidor y devuelva 404."
+          }
+        },
+        {
+          "name": "PUT - Actualizar ID inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Devuelve HTTP 404 Not Found al intentar actualizar ID inexistente', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Inexistente\",\n  \"precio\": 100.0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/articulos/99999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "articulos",
+                "99999"
+              ]
+            },
+            "description": "Verifica que actualizar un código inexistente devuelva 404."
+          }
+        },
+        {
+          "name": "DELETE - Eliminar ID inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Devuelve HTTP 404 Not Found al intentar eliminar ID inexistente', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/articulos/99999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "articulos",
+                "99999"
+              ]
+            },
+            "description": "Verifica que eliminar un código inexistente devuelva 404."
+          }
+        }
+      ]
     }
   ]
 }
