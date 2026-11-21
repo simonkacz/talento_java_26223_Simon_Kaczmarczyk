@@ -1,3 +1,5 @@
+###Video de Youtube mostrando el funcionamiento: https://youtu.be/yROtSFMwZZA
+
 ```text
 articulo-api-mysql/
 ├── database/schema_y_datos.sql              # Script SQL opcional para phpMyAdmin
