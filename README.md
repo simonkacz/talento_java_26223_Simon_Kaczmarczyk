@@ -1,4 +1,4 @@
-##Video de Youtube mostrando el funcionamiento: https://youtu.be/yROtSFMwZZA
+Video de Youtube mostrando el funcionamiento: https://youtu.be/yROtSFMwZZA
 
 ```text
 articulo-api-mysql/
